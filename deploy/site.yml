@@ -1,0 +1,16 @@
+---
+- name: Create a 'SERCH Lights' Django app running on a vitual machine.
+  hosts: all
+  user: vagrant
+  sudo: yes
+  vars:
+    - update_apt_cache: yes
+  vars_files:
+    - group_vars/all 
+  
+  roles:
+    - common
+    - python
+    - postgres
+    - apache
+    - django

@@ -1,0 +1,10 @@
+---
+- name: install apache and modules
+  apt: name={{ item }} update_cache=yes state=present
+  with_items:
+    - apache2
+    - libapache2-mod-wsgi
+
+- name: enable wsgi module
+  apache2_module: name=wsgi state=present
+

@@ -1,0 +1,31 @@
+---
+- name: install python related packages, including SNI dependencies
+  apt: name={{ item }} update_cache={{ update_apt_cache }} force=yes state=installed
+  with_items:
+    - python-pip
+    - python-dev
+    - build-essential
+    - libssl-dev
+    - libffi-dev 
+  tags: packages
+
+# See https://urllib3.readthedocs.org/en/latest/security.html
+- name: install OpenSSL bindings to resolve InsecurePlatformWarning
+  pip: name={{ item }} state=latest
+  with_items:
+    - pyopenssl
+    - ndg-httpsclient
+    - pyasn1
+    - pip
+  tags: packages
+
+- name: install virtualenv
+  pip: name=virtualenv
+
+- name: create virtualenv
+  command: virtualenv {{ virtualenv_path }} creates={{ virtualenv_path }}/bin/activate
+
+#- name: install packages inside virtualenv
+#  pip: virtualenv={{ virtualenv_path }} name={{ item }}
+#  with_items:
+

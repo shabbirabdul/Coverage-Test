@@ -1,0 +1,21 @@
+---
+- name: add postgres repo
+  apt_repository: repo='deb http://apt.postgresql.org/pub/repos/apt {{ansible_distribution_release }}-pgdg main'
+
+- name: add postgres repo key
+  apt_key: url=http://apt.postgresql.org/pub/repos/apt/ACCC4CF8.asc state=present
+
+- name: install postgres/postgis and related packages
+  apt: name={{ item }} update_cache=yes state=present
+  with_items:
+    - postgresql-9.3
+    - binutils
+    - libproj-dev
+    - gdal-bin
+    - libpq-dev
+    - python-psycopg2
+    - postgresql-9.3-postgis-2.1
+
+#- name: create postgis extension
+#  sudo_user: postgres
+#  postgresql_ext: name=postgis db=postgres

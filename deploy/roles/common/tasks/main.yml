@@ -1,0 +1,27 @@
+---
+- name: update apt package cache
+  apt: update_cache=yes cache_valid_time=3600
+  
+- name: upgrade installed packages
+  apt: upgrade=safe
+
+- name: install package for unattended-upgrades
+  apt: name=unattended-upgrades state=installed
+
+- name: configure automatic apt update interval
+  copy: src=../files/10periodic dest=/etc/apt/apt.conf.d/10periodic
+
+- name: install common packages
+  apt: name={{ item }} update_cache={{ update_apt_cache }} force=yes state=installed
+  with_items:
+    - htop 
+  tags: packages
+
+- name: configure message of the day (motd)
+  copy: src=../files/client.conf dest=/etc/landscape/client.conf owner=landscape group=landscape
+
+- name: remove extra motd
+  file: path=/etc/update-motd.d/{{ item  }} state=absent
+  with_items:
+    - 51-cloudguest
+    - 10-help-text

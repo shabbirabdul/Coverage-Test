@@ -1,0 +1,36 @@
+---
+- name: install required python packages inside virtualenv
+  pip: virtualenv={{ virtualenv_path }} requirements="{{ project_path }}/requirements.txt"
+
+- name: create database
+  sudo_user: postgres
+  postgresql_db: name=serchlights state=present
+
+- name: create postgis extension
+  sudo_user: postgres
+  postgresql_ext: name=postgis db=serchlights
+
+- name: create db user
+  sudo_user: postgres
+  postgresql_user: db=serchlights priv=ALL user={{ postgres_user }} password={{ postgres_password }}
+
+- name: sync the database, apply migrations, and collect static content
+  django_manage:
+    command: "{{ item }}"
+    app_path: /srv/lights
+    virtualenv: "{{ virtualenv_path }}"
+    settings: serchlights.settings
+  with_items:
+    - syncdb
+    - migrate
+    - collectstatic
+
+- name: create apache virtual host file
+  copy: src=../files/lights.conf dest=/etc/apache2/sites-available/lights.conf
+
+- name: enable site
+  command: a2ensite lights
+  args:
+    creates: /etc/apache2/sites-enabled/lights.conf
+  notify:
+  - restart apache2  

@@ -1,0 +1,8 @@
+---
+#key: "{{ lookup('ini', 'key section=default file=../../../.env') }}"
+project_name: lights
+project_path: /srv/lights
+workon_home: /home/vagrant/.virtualenvs
+virtualenv_path: "{{ workon_home }}/{{ project_name }}"
+postgres_user: xxxx
+postgres_password: xxxx 
